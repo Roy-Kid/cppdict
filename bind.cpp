@@ -5,6 +5,7 @@
 #include <iostream>
 
 using TypedData = Data<int, std::string>;
+using TypedDict = Dict<int, std::string>;
 
 namespace py = pybind11;
 
@@ -53,6 +54,36 @@ namespace pybind11
             }
         };
 
+        template <>
+        struct type_caster<TypedDict>
+        {
+
+            public:
+                PYBIND11_TYPE_CASTER(TypedDict, const_name("Dict"));
+
+                // Conversion part 1 (C++ -> Python): convert a C++ type into a PyObject
+                static handle cast(const TypedDict &d, return_value_policy, handle)
+                {
+                    std::cerr << "cast" << std::endl;
+                    return py::cast(d.get_map()).inc_ref();
+                }
+
+                // Conversion part 2 (Python->C++): convert a PyObject into a C++ type
+                bool load(handle src, bool)
+                {
+                    if (isinstance<py::dict>(src))
+                    {
+                        std::cerr << "dict" << std::endl;
+                        value = TypedDict(py::cast<std::map<std::string, TypedData>>(src));
+                    }
+                    else
+                        return false;
+                    return true;
+                }
+
+        };
+
+
     } // namespace detail
 } // namespace pybind11
 
@@ -63,7 +94,7 @@ PYBIND11_MODULE(example, m)
     //     // .def(py::init<std::variant<int, std::string>>());
     //     .def(py::init<int>());
 
-    m.def("py2cpp", [](TypedData &d) {
+    m.def("data_py2cpp", [](TypedData &d) {
         std::cerr << "test" << std::endl;
         switch (d.index())
         {
@@ -75,7 +106,21 @@ PYBIND11_MODULE(example, m)
             break;
         }
     });
-    m.def("cpp2py", []() {
+    m.def("data_cpp2py", []() {
         return TypedData(1);
+    });
+    m.def("dict_py2cpp", [](Dict<int, std::string> &d) {
+        std::cerr << "test" << std::endl;
+        for (auto &item : d)
+        {
+            std::cerr << item.first << std::endl;
+            std::cerr << item.second << std::endl;
+        }
+    });
+    m.def("dict_cpp2py", []() {
+        Dict<int, std::string> d;
+        d["a"] = TypedData(1);
+        d["b"] = TypedData("hello");
+        return d;
     });
 }

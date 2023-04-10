@@ -64,6 +64,22 @@ public:
     {
         return _value;
     }
+
+    // override <<
+    friend std::ostream &operator<<(std::ostream &os, const Data &d)
+    {
+        switch (d.index())
+        {
+        case 0:
+            os << d.get<int>();
+            break;
+        case 1:
+            os << d.get<std::string>();
+            break;
+        }
+        return os;
+    }
+
 };
 
 // dict
@@ -81,6 +97,7 @@ private:
 public:
 
     Dict() : m_map() {};
+    Dict(const container_type &map) : m_map(map) {};
 
     template <typename T>
     void set(const key_type &key, const T &value)
@@ -137,6 +154,19 @@ public:
         return m_map[key];
     }
 
-    // override operator=
+    // iterator and return key-value pair
+    auto begin() const
+    {
+        return m_map.begin();
+    }
 
+    auto end() const
+    {
+        return m_map.end();
+    }
+
+    container_type get_map() const
+    {
+        return m_map;
+    }
 };
