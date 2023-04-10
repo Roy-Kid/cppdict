@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "dict.h"
-#include <variant>
 
 TEST(TestData, test_init)
 {
@@ -55,7 +54,6 @@ TEST(TestData, test_eq)
 TEST(TestData, test_property)
 {
     Data<int, double, std::string> data(1);
-    auto index = data.index();
 }
 
 TEST(TestDict, test1)

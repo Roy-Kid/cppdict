@@ -36,3 +36,6 @@ target_compile_options(cpptest
 
 include(GoogleTest)
 gtest_discover_tests(cpptest)
+
+find_package(pybind11 REQUIRED)
+pybind11_add_module(example bind.cpp)

@@ -55,7 +55,7 @@ public:
 
     variant_type _value;
 
-    auto index()
+    const auto index() const
     {
         return _value.index();
     }
